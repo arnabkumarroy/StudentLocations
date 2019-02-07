@@ -113,7 +113,7 @@ class OntheMapViewController: UIViewController, MKMapViewDelegate {
     }
     
     @IBAction func logoutApplication() {
-        UdacityOntheMapClient.sharedInstance().taskForLogout(self)
+        UdacityOntheMapClient.sharedInstance().getLogout(nameOfViewController: self)
     }
     
 }
