@@ -91,7 +91,7 @@ class TableListViewController: UITableViewController {
     
     //MARK: - Actions
     @IBAction func logoutApplication() {
-        UdacityOntheMapClient.sharedInstance().taskForLogout(self)
+        UdacityOntheMapClient.sharedInstance().getLogout(nameOfViewController:self)
     }
 
     

@@ -60,25 +60,25 @@ class OntheMapViewController: UIViewController, MKMapViewDelegate {
          return
          }
             self.studentDetails = StudentPosition.studentPositionsFrom(results: results)
-        
+            for location in self.studentDetails {
+                let lat = CLLocationDegrees(location.studentLatitude)
+                let lon = CLLocationDegrees(location.studentLongitude)
+                let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+                let first = location.studentFirstName!
+                let last = location.studentLastName!
+                let url = location.studentURL
+                let annotation = MKPointAnnotation()
+                annotation.coordinate = coordinate
+                annotation.title = "\(first) \(last)"
+                annotation.subtitle = url
+                self.annotations.append(annotation)
+            }
+            performUIUpdatesOnMain {
+                self.mapView.delegate = self
+                self.mapView.addAnnotations(self.annotations)
+            }
          }
-        for location in studentDetails {
-            let lat = CLLocationDegrees(location.studentLatitude)
-            let lon = CLLocationDegrees(location.studentLongitude)
-            let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
-            let first = location.studentFirstName!
-            let last = location.studentLastName!
-            let url = location.studentURL
-            let annotation = MKPointAnnotation()
-            annotation.coordinate = coordinate
-            annotation.title = "\(first) \(last)"
-            annotation.subtitle = url
-            self.annotations.append(annotation)
-        }
-        performUIUpdatesOnMain {
-            self.mapView.delegate = self
-            self.mapView.addAnnotations(self.annotations)
-        }
+        
         task.resume()
  
         
