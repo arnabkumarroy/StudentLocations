@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Zpk-eE-sHw">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Zpk-eE-sHw">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -54,7 +54,7 @@
                                         </constraints>
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits" enablesReturnKeyAutomatically="YES" textContentType="password"/>
+                                        <textInputTraits key="textInputTraits" enablesReturnKeyAutomatically="YES" secureTextEntry="YES" textContentType="password"/>
                                     </textField>
                                 </subviews>
                             </stackView>
@@ -67,14 +67,21 @@
                                     <segue destination="bs4-Ud-mbw" kind="presentation" identifier="Login" id="9b0-z2-ibJ"/>
                                 </connections>
                             </button>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo-u" translatesAutoresizingMaskIntoConstraints="NO" id="0Of-hW-xzd">
+                                <rect key="frame" x="67" y="90" width="240" height="128"/>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="hPV-m2-pZR" firstAttribute="top" secondItem="0Of-hW-xzd" secondAttribute="bottom" constant="25" id="04f-0m-5H5"/>
+                            <constraint firstItem="0Of-hW-xzd" firstAttribute="leading" secondItem="v9C-Ki-flh" secondAttribute="leading" constant="67" id="8ec-a8-Vid"/>
                             <constraint firstItem="v9C-Ki-flh" firstAttribute="trailing" secondItem="hPV-m2-pZR" secondAttribute="trailing" constant="38" id="L1N-JI-5Jd"/>
                             <constraint firstItem="v9C-Ki-flh" firstAttribute="trailing" secondItem="FQo-bD-9wd" secondAttribute="trailing" constant="38" id="Qhs-qI-glu"/>
                             <constraint firstItem="FQo-bD-9wd" firstAttribute="top" secondItem="hPV-m2-pZR" secondAttribute="bottom" constant="50" id="RvC-zG-pGC"/>
                             <constraint firstItem="hPV-m2-pZR" firstAttribute="top" secondItem="v9C-Ki-flh" secondAttribute="top" constant="179" id="aNu-j7-eBJ"/>
+                            <constraint firstItem="v9C-Ki-flh" firstAttribute="trailing" secondItem="0Of-hW-xzd" secondAttribute="trailing" constant="68" id="hrt-Xc-2hC"/>
                             <constraint firstItem="hPV-m2-pZR" firstAttribute="leading" secondItem="v9C-Ki-flh" secondAttribute="leading" constant="37" id="tdT-MS-Zdp"/>
+                            <constraint firstItem="0Of-hW-xzd" firstAttribute="top" secondItem="v9C-Ki-flh" secondAttribute="top" constant="26" id="tkB-1y-8gN"/>
                             <constraint firstItem="FQo-bD-9wd" firstAttribute="leading" secondItem="v9C-Ki-flh" secondAttribute="leading" constant="37" id="vph-uI-bK3"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="v9C-Ki-flh"/>
@@ -256,17 +263,27 @@
                                     <wkPreferences key="preferences"/>
                                 </wkWebViewConfiguration>
                             </wkWebView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="iN9-g0-5kH">
+                                <rect key="frame" x="162.5" y="286" width="50" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="Nl5-5a-VNs"/>
+                                    <constraint firstAttribute="width" constant="50" id="k1F-sI-KJZ"/>
+                                </constraints>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="ouh-lR-VfG" firstAttribute="trailing" secondItem="xwF-fd-5Hw" secondAttribute="trailing" id="1H6-sQ-ard"/>
+                            <constraint firstItem="iN9-g0-5kH" firstAttribute="top" secondItem="xwF-fd-5Hw" secondAttribute="top" constant="266" id="8zc-ND-g4z"/>
                             <constraint firstItem="ouh-lR-VfG" firstAttribute="leading" secondItem="xwF-fd-5Hw" secondAttribute="leading" id="GnM-tp-LCX"/>
                             <constraint firstItem="ouh-lR-VfG" firstAttribute="top" secondItem="J5h-5d-3dn" secondAttribute="top" id="cl9-9V-VJb"/>
+                            <constraint firstItem="iN9-g0-5kH" firstAttribute="centerX" secondItem="ouh-lR-VfG" secondAttribute="centerX" id="eDe-tn-b0a"/>
                             <constraint firstItem="ouh-lR-VfG" firstAttribute="bottom" secondItem="xwF-fd-5Hw" secondAttribute="bottom" id="xkR-zs-4iG"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="xwF-fd-5Hw"/>
                     </view>
                     <connections>
+                        <outlet property="progressIndicator" destination="iN9-g0-5kH" id="nkn-0U-NoV"/>
                         <outlet property="webView" destination="ouh-lR-VfG" id="Iiu-Lx-GXE"/>
                     </connections>
                 </viewController>
@@ -349,7 +366,7 @@
                                 </connections>
                             </button>
                             <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="PcO-PD-Nvy">
-                                <rect key="frame" x="178" y="296" width="20" height="20"/>
+                                <rect key="frame" x="178" y="296" width="19" height="20"/>
                                 <color key="color" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </activityIndicatorView>
                         </subviews>
@@ -405,6 +422,7 @@
         <image name="icon_addpin" width="24" height="24"/>
         <image name="icon_listview-selected" width="75" height="50"/>
         <image name="icon_mapview-selected" width="75" height="50"/>
+        <image name="logo-u" width="62" height="62"/>
         <image name="logout" width="24" height="24"/>
     </resources>
     <inferredMetricsTieBreakers>

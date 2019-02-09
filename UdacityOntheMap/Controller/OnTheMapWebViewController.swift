@@ -12,6 +12,7 @@ import WebKit
 class OnTheMapWebViewController: UIViewController, WKUIDelegate {
     
     @IBOutlet weak var webView: WKWebView!
+    @IBOutlet weak var progressIndicator: UIActivityIndicatorView!
     
     var urlString = "https://www.udacity.com"
     
@@ -31,6 +32,10 @@ class OnTheMapWebViewController: UIViewController, WKUIDelegate {
         webView.load(request)
     }
     
+    func webView(webView: WKWebView!, didFinishNavigation navigation: WKNavigation!) {
+        progressIndicator.isHidden = true
+    }
+
     
 }
 

@@ -249,7 +249,7 @@ class UdacityOntheMapClient : NSObject {
         let usableResult = result!.subdata(in: range)
         let parsedResult: [String:AnyObject]!
         do {
-            parsedResult = try JSONSerialization.jsonObject(with: usableResult, options: .allowFragments) as! [String : AnyObject]
+            parsedResult = try JSONSerialization.jsonObject(with: usableResult, options: .allowFragments) as? [String : AnyObject]
         } catch {
             parseCompletionHandler(nil, "Unable to parse data. wrong JSON")
             return
@@ -260,7 +260,7 @@ class UdacityOntheMapClient : NSObject {
     func parseResult( _ result: Data?, _ error: String?, _ viewController: UIViewController, _ parseResultCompletionHandler: @escaping( _ result: [String:AnyObject]?, _ error: String?) -> Void) {
         let parsedResult: [String:AnyObject]!
         do {
-            parsedResult = try JSONSerialization.jsonObject(with: result!, options: .allowFragments) as! [String:AnyObject]
+            parsedResult = try JSONSerialization.jsonObject(with: result!, options: .allowFragments) as? [String:AnyObject]
         } catch {
             parseResultCompletionHandler(nil, "Unable to parse data. wrong JSON")
             return

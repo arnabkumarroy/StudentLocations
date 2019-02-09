@@ -71,6 +71,7 @@ extension UdacityOntheMapClient {
         static let results = "results"
         static let session = "session"
         static let registered = "registered"
+        static let error = "error"
     }
     
     struct Methods_TYPE {

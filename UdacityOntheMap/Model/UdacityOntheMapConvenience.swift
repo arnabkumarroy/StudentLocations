@@ -13,7 +13,7 @@ extension UdacityOntheMapClient {
     
     func handleRequest( _ request: URLRequest, _ viewController: UIViewController, withCompletionHandler: @escaping( _ result: Data?, _ error: String?) -> Void) -> URLSessionDataTask {
         let request = request
-        let task = session.dataTask(with: request) { data, response, error in
+        let task = session.dataTask(with: request) { (data, response, error) in
             self.checkForErrorInTask(data, response, error: error) { (success, error) in
                 self.checkForError(success, error, viewController)
                 self.checkStatusCode(data, inResponse: response, error as? Error) { (success, error) in
@@ -27,23 +27,22 @@ extension UdacityOntheMapClient {
     }
     
     //MARK: Account Functions
-    func taskForLogin(_ viewController: UIViewController) {
+    func taskForLogin(_ viewController: UIViewController) -> Bool {
         let loginURL = buildURL(Constants.onTheMapHost, withPathExtension: Constants.onTheMapSessionPath)
         var request = URLRequest(url: loginURL)
         request.httpMethod = Methods_TYPE.post
         request.addValue(Common_HTTPValues.json, forHTTPHeaderField: Common_HTTPHeaders_Key.accept)
         request.addValue(Common_HTTPValues.json, forHTTPHeaderField: Common_HTTPHeaders_Key.contentType)
-        let body = [REQUEST_KEY.udacity: [DUMMY_VALUES.username: REQUEST_KEY.username, DUMMY_VALUES.password: REQUEST_KEY.password]]
+        let body = [REQUEST_KEY.udacity: [REQUEST_KEY.username: DUMMY_VALUES.username, REQUEST_KEY.password: DUMMY_VALUES.password]]
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: .prettyPrinted)
-        } catch {
-            displayError(error: "Something went wrong!", "Please check your network connection or try again later.", viewController)
-            return
-        }
-        
-        handleRequest(request, viewController) { (result, error) in
+            handleRequest(request, viewController){ (result, error) in
             self.parseDataFromRange(result, error, viewController) { (result, error) in
                 print(result!)
+                guard let errorResponse = result![JSONResponseKeys.error] as? String else{
+                    self.displayError(error: "Oops!", "Account not found or invalid credentials.", viewController)
+                    return
+                }
                 guard let accountInfo = result![JSONResponseKeys.account] as? [String:AnyObject] else {
                     self.displayError(error: "Oops!", "Please check your network connection or try again later.", viewController)
                     return
@@ -75,6 +74,13 @@ extension UdacityOntheMapClient {
                     }
                 }
             }
+        }
+        return true
+            
+        }
+        catch {
+            displayError(error: "Something went wrong!", "Please check your network connection or try again later.", viewController)
+            return false
         }
     }
     
