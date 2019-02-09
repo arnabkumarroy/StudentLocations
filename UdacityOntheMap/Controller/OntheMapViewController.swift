@@ -20,56 +20,28 @@ class OntheMapViewController: UIViewController, MKMapViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.mapView.delegate = self;
         displayStudentLocations()
-
     }
     
-    //GET Student Locations
-    
+    //Display Student location as PIN using MKPointAnnotation
     func displayStudentLocations() {
-        
-        var request = URLRequest(url: URL(string: "https://parse.udacity.com/parse/classes/StudentLocation?limit=40&order=-updatedAt")!)
-         request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
-         request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
-         let session = URLSession.shared
-         let task = session.dataTask(with: request) { data, response, error in
-         guard error == nil else {
-         UdacityOntheMapClient.sharedInstance().displayError(error: "Something went wrong!", "Please check your network connection or try again later.",self)
-         return
-         }
-         guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
-         UdacityOntheMapClient.sharedInstance().displayError(error: "Something went wrong!", "Please check your network connection or try again later.",self)
-         return
-         }
-         let parsedResult: [String:AnyObject]
-         do {
-         parsedResult = try JSONSerialization.jsonObject(with: data!, options: .allowFragments) as! [String:AnyObject]
-         } catch {
-         UdacityOntheMapClient.sharedInstance().displayError(error: "Something went wrong!", "Please check your network connection or try again later.",self)
-         return
-         }
-            
-         guard let results = parsedResult["results"] as? [[String:AnyObject]] else {
-         UdacityOntheMapClient.sharedInstance().displayError(error: "Something went wrong!", "Please check your network connection or try again later.",self)
-         return
-         }
-            self.studentDetails = StudentPosition.studentPositionsFrom(results: results)
+        UdacityOntheMapClient.sharedInstance().getStudentLocations(self) { (student) in
+            self.studentDetails = student
             for location in self.studentDetails {
                 let lat = CLLocationDegrees(location.studentLatitude)
                 let lon = CLLocationDegrees(location.studentLongitude)
                 let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
-                let first = location.studentFirstName!
-                let last = location.studentLastName!
+                let studentFirstName = location.studentFirstName!
+                let studentLastName = location.studentLastName!
                 let url = location.studentURL
                 let annotation = MKPointAnnotation()
                 annotation.coordinate = coordinate
-                annotation.title = "\(first) \(last)"
+                annotation.title = "\(studentFirstName) \(studentLastName)"
                 annotation.subtitle = url
                 self.annotations.append(annotation)
             }
@@ -77,14 +49,10 @@ class OntheMapViewController: UIViewController, MKMapViewDelegate {
                 self.mapView.delegate = self
                 self.mapView.addAnnotations(self.annotations)
             }
-         }
-        
-        task.resume()
- 
-        
+        }
     }
     
-    // MARK: - MKMapViewDelegate Methods
+    // MARK: - MKMapViewDelegate Methods to display the PIN
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         let reuseID = "pin"
         var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseID) as? MKPinAnnotationView
@@ -99,6 +67,7 @@ class OntheMapViewController: UIViewController, MKMapViewDelegate {
         return pinView
     }
     
+    // MARK: - MKMapViewDelegate Methods to go to the webpage on click of it.
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         if control == view.rightCalloutAccessoryView {
             let locationURL = view.annotation?.subtitle!

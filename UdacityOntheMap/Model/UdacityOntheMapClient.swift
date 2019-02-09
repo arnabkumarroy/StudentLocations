@@ -214,11 +214,11 @@ class UdacityOntheMapClient : NSObject {
     
     func checkForError( _ success: Bool, _ error: String?, _ viewController: UIViewController) {
         guard error == nil else {
-            if error == "Something went wrong!" {
+            if error == "Oops!" {
                 displayError(error: error!, "Please check your network connection or try again later.", viewController)
             } else if error == "Invalid Credentials" {
                 displayError(error: error!, "Please check your email and password are correct and try again", viewController)
-            } else if error == "Unable to Connect" {
+            } else if error == "Network Issue" {
                 displayError(error: error!, "Please check your network connection and try again", viewController)
             } else {
                 displayError(error: "Something went wrong!", "Please check your network connection or try again later.", viewController)
@@ -230,7 +230,7 @@ class UdacityOntheMapClient : NSObject {
     // MARK: Check HTTPURLResponse
     func checkStatusCode( _ data: Data?, inResponse: URLResponse?, _ error: Error?, checkStatusCodeCompletionHandler: @escaping( _ success: Bool, _ error: String?) -> Void) {
         guard let statusCode = (inResponse as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 599 else {
-            checkStatusCodeCompletionHandler(false, "Your request returned a status code other than 2xx!")
+            checkStatusCodeCompletionHandler(false, "Status code other than 2xx!")
             return
         }
         if statusCode >= 300 && statusCode <= 399 {
@@ -251,7 +251,7 @@ class UdacityOntheMapClient : NSObject {
         do {
             parsedResult = try JSONSerialization.jsonObject(with: usableResult, options: .allowFragments) as! [String : AnyObject]
         } catch {
-            parseCompletionHandler(nil, "Unable to parse data")
+            parseCompletionHandler(nil, "Unable to parse data. wrong JSON")
             return
         }
         parseCompletionHandler(parsedResult, nil)
@@ -262,7 +262,7 @@ class UdacityOntheMapClient : NSObject {
         do {
             parsedResult = try JSONSerialization.jsonObject(with: result!, options: .allowFragments) as! [String:AnyObject]
         } catch {
-            parseResultCompletionHandler(nil, "Unable to parse data")
+            parseResultCompletionHandler(nil, "Unable to parse data. wrong JSON")
             return
         }
         parseResultCompletionHandler(parsedResult, nil)
@@ -272,7 +272,7 @@ class UdacityOntheMapClient : NSObject {
     func displayError(error: String, _ description: String, _ viewController: UIViewController) {
         print(error)
         let alert = UIAlertController(title: error, message: description, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
         performUIUpdatesOnMain {
             viewController.present(alert, animated: true, completion: nil)
         }

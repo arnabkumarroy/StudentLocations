@@ -23,7 +23,7 @@ extension UdacityOntheMapClient {
         static var userId = "0"
     }
     
-    struct HTTPBodyKeys {
+    struct REQUEST_KEY {
         static let firstName = "firstName"
         static let lastName = "lastName"
         static let latitude = "latitude"
@@ -36,7 +36,7 @@ extension UdacityOntheMapClient {
         static let username = "username"
     }
     
-    struct HTTPBodyValues {
+    struct DUMMY_VALUES {
         static var firstName = "Arnab"
         static var lastName = "Roy"
         static var latitude = 0.00
@@ -48,7 +48,7 @@ extension UdacityOntheMapClient {
         static var username = "arnab.roy@gmail.com"
     }
     
-    struct HTTPHeaders {
+    struct Common_HTTPHeaders_Key {
         static let accept = "Accept"
         static let apiKey = "X-Parse-REST-API-Key"
         static let applicationId = "X-Parse-Application-Id"
@@ -56,7 +56,7 @@ extension UdacityOntheMapClient {
         static let xsrfToken = "X-XSRF-Token"
     }
     
-    struct HTTPValues {
+    struct Common_HTTPValues {
         static let apiKey = "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
         static let applicationId = "QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr"
         static let json = "application/json"
@@ -73,7 +73,7 @@ extension UdacityOntheMapClient {
         static let registered = "registered"
     }
     
-    struct Methods {
+    struct Methods_TYPE {
         static let delete = "DELETE"
         static let post = "POST"
     }

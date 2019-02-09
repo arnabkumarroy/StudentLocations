@@ -10,7 +10,7 @@ import UIKit
 import Foundation
 
 extension UdacityOntheMapClient {
-        
+    
     func handleRequest( _ request: URLRequest, _ viewController: UIViewController, withCompletionHandler: @escaping( _ result: Data?, _ error: String?) -> Void) -> URLSessionDataTask {
         let request = request
         let task = session.dataTask(with: request) { data, response, error in
@@ -30,10 +30,10 @@ extension UdacityOntheMapClient {
     func taskForLogin(_ viewController: UIViewController) {
         let loginURL = buildURL(Constants.onTheMapHost, withPathExtension: Constants.onTheMapSessionPath)
         var request = URLRequest(url: loginURL)
-        request.httpMethod = Methods.post
-        request.addValue(HTTPValues.json, forHTTPHeaderField: HTTPHeaders.accept)
-        request.addValue(HTTPValues.json, forHTTPHeaderField: HTTPHeaders.contentType)
-        let body = [HTTPBodyKeys.udacity: [HTTPBodyKeys.username: HTTPBodyValues.username, HTTPBodyKeys.password: HTTPBodyValues.password]]
+        request.httpMethod = Methods_TYPE.post
+        request.addValue(Common_HTTPValues.json, forHTTPHeaderField: Common_HTTPHeaders_Key.accept)
+        request.addValue(Common_HTTPValues.json, forHTTPHeaderField: Common_HTTPHeaders_Key.contentType)
+        let body = [REQUEST_KEY.udacity: [DUMMY_VALUES.username: REQUEST_KEY.username, DUMMY_VALUES.password: REQUEST_KEY.password]]
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: .prettyPrinted)
         } catch {
@@ -45,32 +45,32 @@ extension UdacityOntheMapClient {
             self.parseDataFromRange(result, error, viewController) { (result, error) in
                 print(result!)
                 guard let accountInfo = result![JSONResponseKeys.account] as? [String:AnyObject] else {
-                    self.displayError(error: "Something went wrong!", "Please check your network connection or try again later.", viewController)
+                    self.displayError(error: "Oops!", "Please check your network connection or try again later.", viewController)
                     return
                 }
-                guard let isRegistered = accountInfo[JSONResponseKeys.registered] as? Bool else {
-                    self.displayError(error: "Something went wrong!", "Please check your network connection or try again later.", viewController)
+                guard let isSignedUp = accountInfo[JSONResponseKeys.registered] as? Bool else {
+                    self.displayError(error: "Oops!", "You are not registered. Please register yourself.", viewController)
                     return
                 }
                 guard let accountId = accountInfo[JSONResponseKeys.key] as? String else {
-                    self.displayError(error: "Something went wrong!", "Please check your network connection or try again later.", viewController)
+                    self.displayError(error: "Oops!", "Please check your network connection or try again later.", viewController)
                     return
                 }
                 userId.userId = accountId
-                if isRegistered {
+                if isSignedUp {
                     self.getUserDetails(viewController) { (success) in
                         if success {
-                            self.getStudentLocations(viewController) { (success) in
+                            self.getStudentLocationsResult(viewController) { (success) in
                                 if success {
                                     performUIUpdatesOnMain {
                                         viewController.performSegue(withIdentifier: "Login", sender: viewController)
                                     }
                                 } else {
-                                    self.displayError(error: "Something went wrong!", "Please check your network connection or try again later.", viewController)
+                                    self.displayError(error: "oops!", "Please check your network connection or try again later.", viewController)
                                 }
                             }
                         } else {
-                            self.displayError(error: "Something weng wrong!", "Please check your network connection or try again later.", viewController)
+                            self.displayError(error: "oops!", "Please check your network connection or try again later.", viewController)
                         }
                     }
                 }
@@ -78,22 +78,23 @@ extension UdacityOntheMapClient {
         }
     }
     
+    
     func getLogout( nameOfViewController viewController: UIViewController) {
         let logoutURL = buildURL(Constants.onTheMapHost, withPathExtension: Constants.onTheMapSessionPath)
         var request = URLRequest(url: logoutURL)
-        request.httpMethod = Methods.delete
+        request.httpMethod = Methods_TYPE.delete
         var xsrfCookie: HTTPCookie? = nil
         let sharedCookieStorage = HTTPCookieStorage.shared
         for cookie in sharedCookieStorage.cookies! {
-            if cookie.name == HTTPValues.xsrfToken { xsrfCookie = cookie }
+            if cookie.name == Common_HTTPValues.xsrfToken { xsrfCookie = cookie }
         }
         if let xsrfCookie = xsrfCookie {
-            request.setValue(xsrfCookie.value, forHTTPHeaderField: HTTPHeaders.xsrfToken)
+            request.setValue(xsrfCookie.value, forHTTPHeaderField: Common_HTTPHeaders_Key.xsrfToken)
         }
         handleRequest(request, viewController) { (result, error) in
             self.parseDataFromRange(result, error, viewController) { (result, error) in
                 guard let session = result![JSONResponseKeys.session] as? [String:Any] else {
-                    self.displayError(error: "Something went wrong!", "Unable to logout. Please try again later.", viewController)
+                    self.displayError(error: "Oops!", "Unable to logout. Please try again later.", viewController)
                     return
                 }
                 if session.count > 0 {
@@ -116,51 +117,70 @@ extension UdacityOntheMapClient {
                     userCompletionHandler(false)
                     return
                 }
-                UdacityOntheMapClient.HTTPBodyValues.firstName = userFirstName
+                UdacityOntheMapClient.DUMMY_VALUES.firstName = userFirstName
                 guard let userLastName = result![JSONResponseKeys.lastName] as? String else {
                     userCompletionHandler(false)
                     return
                 }
-                UdacityOntheMapClient.HTTPBodyValues.lastName = userLastName
+                UdacityOntheMapClient.DUMMY_VALUES.lastName = userLastName
                 userCompletionHandler(true)
             }
         }
     }
     
     // MARK: Student Location Functions
-    func getStudentLocations( _ viewController: UIViewController, locationsCompletionHandler: @escaping( _ success: Bool) -> Void) {
+    func getStudentLocations( _ viewController: UIViewController, locationsCompletionHandler: @escaping( _ studentPosition: [StudentPosition]) -> Void) {
         let queryItems = [ParameterKeys.limit : ParameterValues.limit, ParameterKeys.order : ParameterValues.order] as [String:AnyObject]
         let studentLocationURL = buildURL(Constants.parseHost, Constants.parsePath, withQueryItems: queryItems)
         var request = URLRequest(url: studentLocationURL)
-        request.addValue(HTTPValues.applicationId, forHTTPHeaderField: HTTPHeaders.applicationId)
-        request.addValue(HTTPValues.apiKey, forHTTPHeaderField: HTTPHeaders.apiKey)
+        request.addValue(Common_HTTPValues.applicationId, forHTTPHeaderField: Common_HTTPHeaders_Key.applicationId)
+        request.addValue(Common_HTTPValues.apiKey, forHTTPHeaderField: Common_HTTPHeaders_Key.apiKey)
         handleRequest(request, viewController) { (result, error) in
             self.parseResult(result, error, viewController) { (result, error) in
                 guard let results = result![JSONResponseKeys.results] as? [[String:AnyObject]] else {
-                    locationsCompletionHandler(false)
+                    locationsCompletionHandler([StudentPosition]())
                     return
                 }
-                StudentPosition.locations = StudentPosition.studentPositionsFrom(results: results)
-                locationsCompletionHandler(true)
+                StudentPosition.locations = StudentPosition.studentPositions(results: results)
+                locationsCompletionHandler(StudentPosition.locations)
             }
         }
     }
     
-    func addNewPin( _ viewController: UIViewController) {
+    func getStudentLocationsResult( _ viewController: UIViewController, _ userCompletionHandler: @escaping( _ success: Bool) -> Void){
+        let queryItems = [ParameterKeys.limit : ParameterValues.limit, ParameterKeys.order : ParameterValues.order] as [String:AnyObject]
+        let studentLocationURL = buildURL(Constants.parseHost, Constants.parsePath, withQueryItems: queryItems)
+        var request = URLRequest(url: studentLocationURL)
+        request.addValue(Common_HTTPValues.applicationId, forHTTPHeaderField: Common_HTTPHeaders_Key.applicationId)
+        request.addValue(Common_HTTPValues.apiKey, forHTTPHeaderField: Common_HTTPHeaders_Key.apiKey)
+        handleRequest(request, viewController) { (result, error) in
+            self.parseResult(result, error, viewController) { (result, error) in
+                guard let results = result![JSONResponseKeys.results] as? [[String:AnyObject]] else {
+                    userCompletionHandler(false)
+                    return
+                }
+                StudentPosition.locations = StudentPosition.studentPositions(results: results)
+                userCompletionHandler(true)
+            }
+        }
+    }
+    
+    //MARK: to add by study address
+    func addMyAddress( _ viewController: UIViewController) {
         let newLocationURL = buildURL(Constants.parseHost, withPathExtension: Constants.parsePath)
         var request = URLRequest(url: newLocationURL)
-        request.httpMethod = Methods.post
-        request.addValue(HTTPValues.applicationId, forHTTPHeaderField: HTTPHeaders.applicationId)
-        request.addValue(HTTPValues.apiKey, forHTTPHeaderField: HTTPHeaders.apiKey)
-        request.addValue(HTTPValues.json, forHTTPHeaderField: HTTPHeaders.contentType)
+        request.httpMethod = Methods_TYPE.post
+        request.addValue(Common_HTTPValues.applicationId, forHTTPHeaderField: Common_HTTPHeaders_Key.applicationId)
+        request.addValue(Common_HTTPValues.apiKey, forHTTPHeaderField: Common_HTTPHeaders_Key.apiKey)
+        request.addValue(Common_HTTPValues.json, forHTTPHeaderField: Common_HTTPHeaders_Key.contentType)
         let body: [String:Any] = [
-            HTTPBodyKeys.uniqueKey: HTTPBodyValues.uniqueKey,
-            HTTPBodyKeys.firstName: HTTPBodyValues.firstName,
-            HTTPBodyKeys.lastName: HTTPBodyValues.lastName,
-            HTTPBodyKeys.mapString: HTTPBodyValues.mapString,
-            HTTPBodyKeys.mediaURL: HTTPBodyValues.mediaURL,
-            HTTPBodyKeys.latitude: HTTPBodyValues.latitude,
-            HTTPBodyKeys.longitude: HTTPBodyValues.longitude
+            REQUEST_KEY.uniqueKey: DUMMY_VALUES.uniqueKey,
+            REQUEST_KEY.firstName: DUMMY_VALUES.firstName,
+            REQUEST_KEY.lastName: DUMMY_VALUES.lastName,
+            REQUEST_KEY.mapString: DUMMY_VALUES.mapString,
+            REQUEST_KEY.mediaURL: DUMMY_VALUES.mediaURL,
+            REQUEST_KEY.latitude: DUMMY_VALUES.latitude,
+            REQUEST_KEY.longitude: DUMMY_VALUES.longitude
         ]
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: .prettyPrinted)

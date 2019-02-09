@@ -20,7 +20,13 @@ struct StudentPosition {
     
     static var locations = [StudentPosition]()
     
-    //MARK: - Initializers
+    static func studentPositions(results: [[String:AnyObject]]) -> [StudentPosition] {
+        var studentPositions = [StudentPosition]()
+        for result in results {
+            studentPositions.append(StudentPosition(dictionary: result))
+        }
+        return studentPositions
+    }
     
     // construct a StudentLocation from a dictionary
     init(dictionary: [String:AnyObject]) {
@@ -57,16 +63,8 @@ struct StudentPosition {
         if dictionary["mediaURL"] != nil {
             studentURL = dictionary["mediaURL"] as! String
         } else {
-            studentURL = "https://failblog.cheezburger.com/"
+            studentURL = "https://www.google.com/"
         }
-    }
-    
-    static func studentPositionsFrom(results: [[String:AnyObject]]) -> [StudentPosition] {
-        var studentPositions = [StudentPosition]()
-        for result in results {
-            studentPositions.append(StudentPosition(dictionary: result))
-        }
-        return studentPositions
     }
 }
 

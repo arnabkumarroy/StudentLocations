@@ -21,25 +21,25 @@ class TableListViewController: UITableViewController {
     }
     
     // MARK: - Table view data source
-    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(studentDetails.count)
         return studentDetails.count
     }
     
+    //MARK: cellForRowAt
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "locations", for: indexPath)
         let location = studentDetails[indexPath.row]
-        // Configure the cell...
+        // Putting values in the Cell...
         cell.textLabel?.text = "\(location.studentFirstName!) \(location.studentLastName!)"
         cell.detailTextLabel?.text = "\(location.studentURL)"
         return cell
     }
     
+    //MARK: DidSelect Row.   Is customer Select the any ROW from the Table
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let locationURL = studentDetails[indexPath.row].studentURL
         if locationURL.contains("http") {
@@ -51,42 +51,16 @@ class TableListViewController: UITableViewController {
         }
     }
     
-    //GET Student Locations
     
+    
+    //MARK: displayStudentLocations  Display Student location as PIN using MKPointAnnotation
     func displayStudentLocations() {
-        
-         var request = URLRequest(url: URL(string: "https://parse.udacity.com/parse/classes/StudentLocation?limit=100&order=-updatedAt")!)
-         request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
-         request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
-         let session = URLSession.shared
-         let task = session.dataTask(with: request) { data, response, error in
-         guard error == nil else {
-         UdacityOntheMapClient.sharedInstance().displayError(error: "Something went wrong!", "Please check your network connection or try again later.",self)
-         return
-         }
-         guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
-         UdacityOntheMapClient.sharedInstance().displayError(error: "Something went wrong!", "Please check your network connection or try again later.",self)
-         return
-         }
-         let parsedResult: [String:AnyObject]!
-         do {
-         parsedResult = try JSONSerialization.jsonObject(with: data!, options: .allowFragments) as! [String:AnyObject]
-         } catch {
-         UdacityOntheMapClient.sharedInstance().displayError(error: "Something went wrong!", "Please check your network connection or try again later.",self)
-         return
-         }
-         guard let results = parsedResult["results"] as? [[String:AnyObject]] else {
-         UdacityOntheMapClient.sharedInstance().displayError(error: "Something went wrong!", "Please check your network connection or try again later.",self)
-         return
-         }
-         self.studentDetails = StudentPosition.studentPositionsFrom(results: results)
-         performUIUpdatesOnMain {
-         self.tableView.reloadData()
-         }
-         
-         }
-         task.resume()
-        
+        UdacityOntheMapClient.sharedInstance().getStudentLocations(self) { (student) in
+            self.studentDetails = student
+            performUIUpdatesOnMain {
+                self.tableView.reloadData()
+            }
+        }
     }
     
     //MARK: - Actions
